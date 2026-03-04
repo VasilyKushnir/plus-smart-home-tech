@@ -1,6 +1,7 @@
 package ru.yandex.practicum.kafka.telemetry.collector.dto.hub;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -12,7 +13,7 @@ public class DeviceAddedEvent extends HubEvent {
     @NotBlank
     private String id;
 
-    @NotBlank
+    @NotNull
     private DeviceType deviceType;
 
     @Override

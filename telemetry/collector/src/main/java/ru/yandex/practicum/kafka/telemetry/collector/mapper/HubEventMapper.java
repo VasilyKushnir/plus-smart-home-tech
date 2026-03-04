@@ -28,6 +28,7 @@ public class HubEventMapper {
 
                 List<ScenarioConditionAvro> scenarioConditionAvroList = scenarioAddedEvent.getConditions().stream()
                         .map(c -> ScenarioConditionAvro.newBuilder()
+                                .setSensorId(c.getSensorId())
                                 .setType(ConditionTypeAvro.valueOf(c.getType().name()))
                                 .setOperation(ConditionOperationAvro.valueOf(c.getOperation().name()))
                                 .setValue(c.getValue())
