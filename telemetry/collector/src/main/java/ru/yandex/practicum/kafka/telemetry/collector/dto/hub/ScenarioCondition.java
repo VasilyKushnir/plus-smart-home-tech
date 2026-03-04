@@ -1,8 +1,15 @@
 package ru.yandex.practicum.kafka.telemetry.collector.dto.hub;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@ToString
 public class ScenarioCondition {
-    String sensorId;
-    ScenarioConditionType type;
-    ScenarioOperationType operation;
-    int value;
+    private String sensorId;
+    private ScenarioConditionType type;
+    private ScenarioOperationType operation;
+    private Integer value;
 }

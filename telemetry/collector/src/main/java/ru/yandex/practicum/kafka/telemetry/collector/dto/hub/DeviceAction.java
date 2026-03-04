@@ -1,7 +1,14 @@
 package ru.yandex.practicum.kafka.telemetry.collector.dto.hub;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Getter
+@Setter
+@ToString
 public class DeviceAction {
-    String sensorId;
-    DeviceAction type;
-    int value;
+    private String sensorId;
+    private DeviceActionType type;
+    private int value;
 }
