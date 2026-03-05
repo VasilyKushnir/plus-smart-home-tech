@@ -21,7 +21,7 @@ public class KafkaClient {
         Properties config = new Properties();
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, GeneralAvroSerializer.class);
+        config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ru.yandex.practicum.telemetry.serializer.GeneralAvroSerializer.class);
 
         producer = new KafkaProducer<>(config);
     }
@@ -34,6 +34,7 @@ public class KafkaClient {
 
     @PreDestroy
     public void closeConnection() {
+        producer.flush();
         producer.close(Duration.ofSeconds(10));
     }
 }
