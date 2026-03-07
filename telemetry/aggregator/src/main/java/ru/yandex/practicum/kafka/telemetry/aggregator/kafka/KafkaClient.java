@@ -1,4 +1,4 @@
-package ru.yandex.practicum.kafka.telemetry.collector.kafka;
+package ru.yandex.practicum.kafka.telemetry.aggregator.kafka;
 
 import jakarta.annotation.PreDestroy;
 import org.apache.avro.specific.SpecificRecordBase;
