@@ -1,7 +1,6 @@
 package ru.yandex.practicum.kafka.telemetry.aggregator.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.kafka.telemetry.aggregator.kafka.KafkaClient;
@@ -18,7 +17,7 @@ import java.util.Optional;
 @Service
 public class AggregatorServiceImpl implements AggregatorService {
     private final KafkaClient kafkaClient;
-    private final Map<String, SensorsSnapshotAvro> snapshots =  new HashMap<>();
+    private final Map<String, SensorsSnapshotAvro> snapshots = new HashMap<>();
 
     @Override
     public void handleEvent(SensorEventAvro sensorEvent) {
@@ -50,7 +49,7 @@ public class AggregatorServiceImpl implements AggregatorService {
         if (sensorSnapshotAvro.getSensorsState().containsKey(sensorEvent.getId())) {
             SensorStateAvro oldState = sensorSnapshotAvro.getSensorsState().get(sensorEvent.getId());
             if (oldState.getTimestamp().isAfter(sensorEvent.getTimestamp()) ||
-            oldState.getData().equals(sensorEvent.getPayload())) {
+                    oldState.getData().equals(sensorEvent.getPayload())) {
                 return Optional.empty();
             }
         }
