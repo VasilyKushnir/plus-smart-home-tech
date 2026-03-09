@@ -1,4 +1,4 @@
-package ru.yandex.practicum.kafka.telemetry.aggregator;
+package ru.yandex.practicum.kafka.telemetry.analyzer.processor;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,9 +10,9 @@ import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.kafka.telemetry.aggregator.service.AggregatorServiceImpl;
-import ru.yandex.practicum.kafka.telemetry.event.SensorEventAvro;
-import ru.yandex.practicum.telemetry.deserializer.SensorEventDeserializer;
+import ru.yandex.practicum.kafka.telemetry.analyzer.service.HubEventService;
+import ru.yandex.practicum.kafka.telemetry.event.HubEventAvro;
+import ru.yandex.practicum.telemetry.deserializer.HubEventDeserializer;
 
 import java.time.Duration;
 import java.util.List;
@@ -21,16 +21,16 @@ import java.util.Properties;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class AggregationStarter {
-    private final AggregatorServiceImpl aggregatorService;
+public class HubEventProcessor implements Runnable {
+    private final HubEventService hubEventService;
 
     @Value("${telemetry.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
-    @Value("${telemetry.kafka.aggregator.group}")
+    @Value("${telemetry.kafka.hub-processor.group}")
     private String groupId;
 
-    @Value("${telemetry.kafka.aggregator.topic.sensors}")
+    @Value("${telemetry.kafka.hub-processor.topic}")
     private String topic;
 
     public void start() {
@@ -39,20 +39,20 @@ public class AggregationStarter {
         properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         properties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getCanonicalName());
-        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, SensorEventDeserializer.class
+        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, HubEventDeserializer.class
                 .getCanonicalName());
 
-        KafkaConsumer<String, SensorEventAvro> consumer = new KafkaConsumer<>(properties);
+        KafkaConsumer<String, HubEventAvro> consumer = new KafkaConsumer<>(properties);
 
         try {
             consumer.subscribe(List.of(topic));
             while (true) {
-                ConsumerRecords<String, SensorEventAvro> records = consumer.poll(Duration.ofMillis(500));
+                ConsumerRecords<String, HubEventAvro> records = consumer.poll(Duration.ofMillis(500));
                 if (!records.isEmpty()) {
-                    for (ConsumerRecord<String, SensorEventAvro> record : records) {
-                        consumer.commitSync();
-                        aggregatorService.handleEvent(record.value());
+                    for (ConsumerRecord<String, HubEventAvro> record : records) {
+                        hubEventService.handleHubEvent(record.value());
                     }
+                    consumer.commitSync();
                 }
             }
         } catch (WakeupException ignored) {
@@ -67,5 +67,10 @@ public class AggregationStarter {
                 consumer.close();
             }
         }
+    }
+
+    @Override
+    public void run() {
+        this.start();
     }
 }
