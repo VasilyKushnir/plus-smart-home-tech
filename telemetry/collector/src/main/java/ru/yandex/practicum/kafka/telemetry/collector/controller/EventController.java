@@ -1,28 +1,50 @@
 package ru.yandex.practicum.kafka.telemetry.collector.controller;
 
-import jakarta.validation.Valid;
+import com.google.protobuf.Empty;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
+import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.kafka.telemetry.collector.dto.hub.HubEvent;
-import ru.yandex.practicum.kafka.telemetry.collector.dto.sensor.SensorEvent;
+import net.devh.boot.grpc.server.service.GrpcService;
+import ru.yandex.practicum.grpc.telemetry.collector.CollectorControllerGrpc;
+import ru.yandex.practicum.grpc.telemetry.event.HubEventProto;
+import ru.yandex.practicum.grpc.telemetry.event.SensorEventProto;
 import ru.yandex.practicum.kafka.telemetry.collector.service.CollectorService;
 
-@RestController
 @RequiredArgsConstructor
-@RequestMapping("/events")
-public class EventController {
+@GrpcService
+public class EventController extends CollectorControllerGrpc.CollectorControllerImplBase {
     private final CollectorService collectorService;
 
-    @PostMapping("/sensors")
-    @ResponseStatus(HttpStatus.OK)
-    public void collectSensorEvent(@RequestBody @Valid SensorEvent sensorEvent) {
-        collectorService.collectSensorEvent(sensorEvent);
+    @Override
+    public void collectSensorEvent(SensorEventProto request, StreamObserver<Empty> responseObserver) {
+        try {
+            collectorService.collectSensorEvent(request);
+
+            responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            responseObserver.onError(new StatusRuntimeException(
+                    Status.INTERNAL
+                            .withDescription(e.getLocalizedMessage())
+                            .withCause(e)
+            ));
+        }
     }
 
-    @PostMapping("/hubs")
-    @ResponseStatus(HttpStatus.OK)
-    public void collectHubEvent(@RequestBody @Valid HubEvent hubevent) {
-        collectorService.collectHubEvent(hubevent);
+    @Override
+    public void collectHubEvent(HubEventProto request, StreamObserver<Empty> responseObserver) {
+        try {
+            collectorService.collectHubEvent(request);
+
+            responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
+        } catch (Exception e) {
+            responseObserver.onError(new StatusRuntimeException(
+                    Status.INTERNAL
+                            .withDescription(e.getLocalizedMessage())
+                            .withCause(e)
+            ));
+        }
     }
 }
