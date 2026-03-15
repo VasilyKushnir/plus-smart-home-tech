@@ -1,60 +1,65 @@
 package ru.yandex.practicum.kafka.telemetry.collector.mapper;
 
 import org.apache.avro.specific.SpecificRecordBase;
-import ru.yandex.practicum.kafka.telemetry.collector.dto.sensor.*;
+import ru.yandex.practicum.grpc.telemetry.event.*;
 import ru.yandex.practicum.kafka.telemetry.event.*;
 
+import java.time.Instant;
+
 public class SensorEventMapper {
-    public static SensorEventAvro toSensorEventAvro(SensorEvent sensorEvent) {
+    public static SensorEventAvro toSensorEventAvro(SensorEventProto sensorEvent) {
+        SensorEventProto.PayloadCase payloadCase = sensorEvent.getPayloadCase();
         SpecificRecordBase payload;
-        switch (sensorEvent.getType()) {
-            case CLIMATE_SENSOR_EVENT -> {
-                ClimateSensorEvent climateSensorEvent = (ClimateSensorEvent) sensorEvent;
+        switch (payloadCase) {
+            case CLIMATE_SENSOR -> {
+                ClimateSensorProto climateSensorEvent = sensorEvent.getClimateSensor();
                 payload = ClimateSensorAvro.newBuilder()
                         .setTemperatureC(climateSensorEvent.getTemperatureC())
                         .setHumidity(climateSensorEvent.getHumidity())
                         .setCo2Level(climateSensorEvent.getCo2Level())
                         .build();
             }
-            case LIGHT_SENSOR_EVENT -> {
-                LightSensorEvent lightSensorEvent = (LightSensorEvent) sensorEvent;
+            case LIGHT_SENSOR -> {
+                LightSensorProto lightSensorEvent = sensorEvent.getLightSensor();
                 payload = LightSensorAvro.newBuilder()
                         .setLinkQuality(lightSensorEvent.getLinkQuality())
                         .setLuminosity(lightSensorEvent.getLuminosity())
                         .build();
             }
-            case MOTION_SENSOR_EVENT -> {
-                MotionSensorEvent motionSensorEvent = (MotionSensorEvent) sensorEvent;
+            case MOTION_SENSOR -> {
+                MotionSensorProto motionSensorEvent = sensorEvent.getMotionSensor();
                 payload = MotionSensorAvro.newBuilder()
                         .setLinkQuality(motionSensorEvent.getLinkQuality())
-                        .setMotion(motionSensorEvent.isMotion())
+                        .setMotion(motionSensorEvent.getMotion())
                         .setVoltage(motionSensorEvent.getVoltage())
                         .build();
             }
-            case SWITCH_SENSOR_EVENT -> {
-                SwitchSensorEvent switchSensorEvent = (SwitchSensorEvent) sensorEvent;
+            case SWITCH_SENSOR -> {
+                SwitchSensorProto switchSensorEvent = sensorEvent.getSwitchSensor();
                 payload = SwitchSensorAvro.newBuilder()
-                        .setState(switchSensorEvent.isState())
+                        .setState(switchSensorEvent.getState())
                         .build();
             }
-            case TEMPERATURE_SENSOR_EVENT -> {
-                TemperatureSensorEvent temperatureSensorEvent = (TemperatureSensorEvent) sensorEvent;
+            case TEMPERATURE_SENSOR -> {
+                TemperatureSensorProto temperatureSensorEvent = sensorEvent.getTemperatureSensor();
                 payload = TemperatureSensorAvro.newBuilder()
-                        .setId(temperatureSensorEvent.getId())
-                        .setHubId(temperatureSensorEvent.getHubId())
-                        .setTimestamp(temperatureSensorEvent.getTimestamp())
                         .setTemperatureC(temperatureSensorEvent.getTemperatureC())
                         .setTemperatureF(temperatureSensorEvent.getTemperatureF())
                         .build();
             }
             default -> {
-                throw new IllegalArgumentException("Unsupported sensor event type: " + sensorEvent.getType());
+                throw new IllegalArgumentException("Unsupported sensor event type: " + payloadCase);
             }
         }
         return SensorEventAvro.newBuilder()
                 .setId(sensorEvent.getId())
                 .setHubId(sensorEvent.getHubId())
-                .setTimestamp(sensorEvent.getTimestamp())
+                .setTimestamp(
+                        Instant.ofEpochSecond(
+                                sensorEvent.getTimestamp().getSeconds(),
+                                sensorEvent.getTimestamp().getNanos()
+                        )
+                )
                 .setPayload(payload)
                 .build();
     }
