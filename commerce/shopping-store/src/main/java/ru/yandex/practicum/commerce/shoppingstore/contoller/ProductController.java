@@ -1,0 +1,56 @@
+package ru.yandex.practicum.commerce.shoppingstore.contoller;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.commerce.interactionapi.dto.ProductCategory;
+import ru.yandex.practicum.commerce.interactionapi.dto.ProductDto;
+import ru.yandex.practicum.commerce.interactionapi.dto.UpdateProductQuantityRequest;
+import ru.yandex.practicum.commerce.shoppingstore.service.ProductService;
+
+import java.util.UUID;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/v1/shopping-store")
+public class ProductController {
+    private final ProductService productService;
+
+    @GetMapping("/{productId}")
+    public ProductDto getProductById(@PathVariable UUID id) {
+        return productService.getProductById(id);
+    }
+
+    @GetMapping
+    public Page<ProductDto> getProductsByCategory(
+            @RequestParam ProductCategory category,
+            @PageableDefault(size = 20) Pageable pageable
+    ) {
+        return productService.getProductsByCategory(category, pageable);
+    }
+
+    @PostMapping
+    public ProductDto addProduct(@Valid @RequestBody ProductDto productDto) {
+        return productService.addProduct(productDto);
+    }
+
+    @PostMapping
+    public ProductDto updateProduct(@Valid @RequestBody ProductDto productDto) {
+        return productService.updateProduct(productDto);
+    }
+
+    @PostMapping("/removeProductFromStore")
+    public boolean deleteProduct(@Valid @RequestBody @NotNull UUID id) {
+        return productService.deleteProduct(id);
+    }
+
+    @PostMapping("/quantityState")
+    public boolean updateQuantity(@Valid @RequestBody UpdateProductQuantityRequest request) {
+        return productService.updateQuantity(request);
+    }
+}
