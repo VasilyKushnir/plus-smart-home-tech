@@ -22,8 +22,8 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping("/{productId}")
-    public ProductDto getProductById(@PathVariable UUID id) {
-        return productService.getProductById(id);
+    public ProductDto getProductById(@PathVariable UUID productId) {
+        return productService.getProductById(productId);
     }
 
     @GetMapping
@@ -34,7 +34,7 @@ public class ProductController {
         return productService.getProductsByCategory(category, pageable);
     }
 
-    @PostMapping
+    @PutMapping
     public ProductDto addProduct(@Valid @RequestBody ProductDto productDto) {
         return productService.addProduct(productDto);
     }
@@ -50,7 +50,7 @@ public class ProductController {
     }
 
     @PostMapping("/quantityState")
-    public boolean updateQuantity(@Valid @RequestBody UpdateProductQuantityRequest request) {
+    public boolean updateQuantity(@Valid UpdateProductQuantityRequest request) {
         return productService.updateQuantity(request);
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.commerce.interactionapi.dto.ChangeProductQuantityRequest;
 import ru.yandex.practicum.commerce.interactionapi.dto.ShoppingCartDto;
 import ru.yandex.practicum.commerce.interactionapi.dto.ShoppingCartState;
+import ru.yandex.practicum.commerce.interactionapi.feign.WarehouseClient;
 import ru.yandex.practicum.commerce.shoppingcart.entity.ShoppingCart;
 import ru.yandex.practicum.commerce.shoppingcart.exception.NoProductsInShoppingCartException;
 import ru.yandex.practicum.commerce.shoppingcart.exception.NotAuthorizedUserException;
@@ -20,6 +21,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ShoppingCartServiceImpl implements ShoppingCartService {
     private final ShoppingCartRepository shoppingCartRepository;
+    private final WarehouseClient warehouseClient;
 
     @Override
     public ShoppingCartDto getShoppingCart(String username) {
@@ -31,6 +33,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public ShoppingCartDto addToShoppingCart(String username, Map<UUID, Integer> products) {
         ShoppingCart currentShoppingCart = this.returnShoppingCart(username);
         currentShoppingCart.getProducts().putAll(products);
+        warehouseClient.checkProductsInWarehouse(ShoppingCartMapper.toDto(currentShoppingCart));
         ShoppingCart updatedShoppingCart = shoppingCartRepository.save(currentShoppingCart);
         return ShoppingCartMapper.toDto(updatedShoppingCart);
     }
@@ -58,7 +61,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         ShoppingCart cart = this.returnShoppingCart(username);
 
         if (cart.getProducts().containsKey(request.getProductId())) {
-            cart.getProducts().put(request.getProductId(), request.getQuantity());
+            cart.getProducts().put(request.getProductId(), request.getNewQuantity());
             shoppingCartRepository.save(cart);
             return ShoppingCartMapper.toDto(cart);
         }

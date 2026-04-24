@@ -28,4 +28,15 @@ public class ProductMapper {
                 .price(productDto.getPrice())
                 .build();
     }
+
+    public static Product updateProductFields(Product product, ProductDto productDto) {
+        product.setProductName(productDto.getProductName());
+        product.setDescription(productDto.getDescription());
+        product.setImageSrc(productDto.getImageSrc());
+        product.setQuantityState(productDto.getQuantityState());
+        product.setProductState(productDto.getProductState());
+        product.setProductCategory(productDto.getProductCategory());
+        product.setPrice(productDto.getPrice());
+        return product;
+    }
 }

@@ -81,7 +81,11 @@ public class WarehouseServiceImpl implements WarehouseService {
         WarehouseProduct warehouseProduct = warehouseRepository.findById(request.getProductId())
                 .orElseThrow(() -> new ProductInWarehouseDoesNotExists("Product with id " + request.getProductId()
                         + " does not exist"));
-        warehouseProduct.setQuantity(warehouseProduct.getQuantity() + request.getQuantity());
+        Integer currentQuantity = warehouseProduct.getQuantity();
+        if (currentQuantity == null) {
+            currentQuantity = 0;
+        }
+        warehouseProduct.setQuantity(currentQuantity + request.getQuantity());
         warehouseRepository.save(warehouseProduct);
     }
 

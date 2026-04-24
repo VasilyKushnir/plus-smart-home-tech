@@ -29,7 +29,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<ProductDto> getProductsByCategory(ProductCategory category, Pageable pageable) {
-        Page<Product> products = productRepository.findByCategory(category, pageable);
+        Page<Product> products = productRepository.findByProductCategory(category, pageable);
         return products.map(ProductMapper::toDto);
     }
 
@@ -43,9 +43,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto updateProduct(ProductDto productDto) {
         UUID id = productDto.getProductId();
-        Product product = productRepository.findById(id)
+        Product currentProduct = productRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Product with id " + id + " was not found"));
-        return ProductMapper.toDto(productRepository.save(product));
+        Product updatedProduct = ProductMapper.updateProductFields(currentProduct, productDto);
+        return ProductMapper.toDto(productRepository.save(updatedProduct));
     }
 
     @Override

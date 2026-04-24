@@ -29,7 +29,7 @@ public class WarehouseController {
         warehouseService.addProductToWarehouse(request);
     }
 
-    @GetMapping("/adress")
+    @GetMapping("/address")
     public AddressDto getWarehouseAddress() {
         return warehouseService.getWarehouseAddress();
     }

@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @RestControllerAdvice
 public class ShoppingStoreExceptionHandler {
-    @ExceptionHandler
-    public void handleException(final Exception e) {
-
-    }
+//    @ExceptionHandler
+//    public void handleException(final Exception e) {
+//
+//    }
 }
