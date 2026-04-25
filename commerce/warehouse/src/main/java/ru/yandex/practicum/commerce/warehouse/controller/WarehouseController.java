@@ -2,12 +2,10 @@ package ru.yandex.practicum.commerce.warehouse.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.commerce.interactionapi.dto.*;
 import ru.yandex.practicum.commerce.warehouse.service.WarehouseService;
 
-@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/warehouse")

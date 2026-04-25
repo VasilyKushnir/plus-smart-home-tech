@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.commerce.interactionapi.dto.ProductCategory;
 import ru.yandex.practicum.commerce.interactionapi.dto.ProductDto;
@@ -15,6 +16,7 @@ import ru.yandex.practicum.commerce.shoppingstore.service.ProductService;
 
 import java.util.UUID;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/shopping-store")
@@ -45,7 +47,7 @@ public class ProductController {
     }
 
     @PostMapping("/removeProductFromStore")
-    public boolean deleteProduct(@Valid @RequestBody @NotNull UUID id) {
+    public boolean deleteProduct(@RequestBody @NotNull UUID id) {
         return productService.deleteProduct(id);
     }
 
