@@ -1,5 +1,6 @@
 package ru.yandex.practicum.commerce.warehouse.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.commerce.interactionapi.dto.*;
@@ -23,6 +24,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     private final WarehouseRepository warehouseRepository;
 
     @Override
+    @Transactional
     public void putNewProductToWarehouse(NewProductInWarehouseRequest request) {
         if (warehouseRepository.existsById(request.getProductId())) {
             throw new SpecifiedProductAlreadyInWarehouseException("Product with id " + request.getProductId() +
@@ -77,6 +79,7 @@ public class WarehouseServiceImpl implements WarehouseService {
     }
 
     @Override
+    @Transactional
     public void addProductToWarehouse(AddProductToWarehouseRequest request) {
         WarehouseProduct warehouseProduct = warehouseRepository.findById(request.getProductId())
                 .orElseThrow(() -> new ProductInWarehouseDoesNotExists("Product with id " + request.getProductId()

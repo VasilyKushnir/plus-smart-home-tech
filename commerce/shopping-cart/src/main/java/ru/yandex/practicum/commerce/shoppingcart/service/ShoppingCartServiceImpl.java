@@ -1,5 +1,6 @@
 package ru.yandex.practicum.commerce.shoppingcart.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.commerce.interactionapi.dto.ChangeProductQuantityRequest;
@@ -30,6 +31,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
+    @Transactional
     public ShoppingCartDto addToShoppingCart(String username, Map<UUID, Integer> products) {
         ShoppingCart currentShoppingCart = this.returnShoppingCart(username);
         currentShoppingCart.getProducts().putAll(products);
@@ -39,6 +41,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
+    @Transactional
     public void deleteShoppingCart(String username) {
         ShoppingCart cart = shoppingCartRepository.findByUsernameAndState(username, ShoppingCartState.ACTIVE)
                 .orElseThrow(() -> new NotAuthorizedUserException("Shopping cart for user: " + username + " was" +
@@ -48,6 +51,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
+    @Transactional
     public ShoppingCartDto removeFromShoppingCart(String username, Set<UUID> products) {
         ShoppingCart cart = this.returnShoppingCart(username);
         for (UUID productId : products) {
@@ -57,6 +61,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     }
 
     @Override
+    @Transactional
     public ShoppingCartDto changeQuantity(String username, ChangeProductQuantityRequest request) {
         ShoppingCart cart = this.returnShoppingCart(username);
 

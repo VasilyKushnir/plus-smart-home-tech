@@ -1,5 +1,6 @@
 package ru.yandex.practicum.commerce.shoppingstore.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +35,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public ProductDto addProduct(ProductDto productDto) {
         Product product = ProductMapper.toEntity(productDto);
         product = productRepository.save(product);
@@ -41,6 +43,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public ProductDto updateProduct(ProductDto productDto) {
         UUID id = productDto.getProductId();
         Product currentProduct = productRepository.findById(id)
@@ -50,6 +53,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public boolean deleteProduct(UUID id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Product with id " + id + " was not found"));
@@ -59,6 +63,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public boolean updateQuantity(UpdateProductQuantityRequest request) {
         UUID id = request.getProductId();
         Product product = productRepository.findById(id)
