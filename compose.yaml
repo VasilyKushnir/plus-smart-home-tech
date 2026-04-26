@@ -34,7 +34,7 @@ services:
                              --bootstrap-server kafka:29092'"
     init: true
 
-  postgres:
+  postgres-analyzer:
     image: postgres:16.1
     container_name: postgres-analyzer
     ports:
@@ -43,6 +43,51 @@ services:
       - POSTGRES_PASSWORD=analyzer
       - POSTGRES_USER=analyzer
       - POSTGRES_DB=analyzer
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+
+  postgres-shopping-cart:
+    image: postgres:16.1
+    container_name: postgres-shopping-cart
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_PASSWORD=shopping-cart-password
+      - POSTGRES_USER=shopping-cart-user
+      - POSTGRES_DB=shopping-cart-db
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+
+  postgres-shopping-store:
+    image: postgres:16.1
+    container_name: postgres-shopping-store
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_PASSWORD=shopping-store-password
+      - POSTGRES_USER=shopping-store-user
+      - POSTGRES_DB=shopping-store-db
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+
+  postgres-warehouse:
+    image: postgres:16.1
+    container_name: postgres-warehouse
+    ports:
+      - "5435:5432"
+    environment:
+      - POSTGRES_PASSWORD=warehouse-password
+      - POSTGRES_USER=warehouse-user
+      - POSTGRES_DB=warehouse-db
     healthcheck:
       test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
       timeout: 5s
