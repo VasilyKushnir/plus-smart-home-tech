@@ -108,4 +108,19 @@ public class WarehouseServiceImpl implements WarehouseService {
                 .flat(CURRENT_ADDRESS)
                 .build();
     }
+
+    @Override
+    public void shipToDelivery(ShippedToDeliveryRequest request) {
+
+    }
+
+    @Override
+    public void returnProductsToWarehouse(Map<UUID, Integer> products) {
+
+    }
+
+    @Override
+    public BookedProductsDto assembly(AssemblyProductsForOrderRequest request) {
+        return null;
+    }
 }
