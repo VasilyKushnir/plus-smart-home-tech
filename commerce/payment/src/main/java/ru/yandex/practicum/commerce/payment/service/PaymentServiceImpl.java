@@ -1,11 +1,15 @@
 package ru.yandex.practicum.commerce.payment.service;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import ru.yandex.practicum.commerce.interactionapi.dto.OrderDto;
 import ru.yandex.practicum.commerce.interactionapi.dto.PaymentDto;
 
 import java.util.UUID;
 
-public class PublicServiceImpl implements PaymentService {
+@Service
+@RequiredArgsConstructor
+public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentDto processPayment(OrderDto order) {
         return null;
