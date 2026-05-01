@@ -10,7 +10,6 @@ import java.util.UUID;
 @Value
 @Builder(toBuilder = true)
 public class OrderDto {
-    @NotNull
     UUID orderId;
 
     UUID shoppingCartId;
