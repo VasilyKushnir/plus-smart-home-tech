@@ -43,6 +43,6 @@ public class PaymentController {
 
     @PostMapping("/failed")
     public void denyPayment(@RequestBody @NotBlank UUID paymentId) {
-
+        paymentService.denyPayment(paymentId);
     }
 }
