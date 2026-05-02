@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS orders (
     order_id UUID PRIMARY KEY,
-    shopping_card_id UUID NOT NULL,
+    shopping_cart_id UUID NOT NULL,
     payment_id UUID,
     delivery_id UUID,
     state VARCHAR(64),
@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS orders (
 );
 
 CREATE TABLE IF NOT EXISTS order_products (
-    order_id UUID REFERENCES orders,
+    order_id UUID REFERENCES orders ON DELETE CASCADE,
     product_id UUID,
     quantity INTEGER,
     PRIMARY KEY (order_id, product_id)

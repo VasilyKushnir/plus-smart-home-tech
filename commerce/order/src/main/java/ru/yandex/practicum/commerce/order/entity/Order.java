@@ -16,7 +16,7 @@ import java.util.UUID;
 @Builder(toBuilder = true)
 public class Order {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID orderId;
 
     private UUID shoppingCartId;
@@ -34,15 +34,15 @@ public class Order {
     @Enumerated(EnumType.STRING)
     private OrderState state;
 
-    private double deliveryWeight;
+    private Double deliveryWeight;
 
-    private double deliveryVolume;
+    private Double deliveryVolume;
 
     private boolean fragile;
 
-    private double totalPrice;
+    private Double totalPrice;
 
-    private double deliveryPrice;
+    private Double deliveryPrice;
 
-    private double productPrice;
+    private Double productPrice;
 }
