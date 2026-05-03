@@ -10,7 +10,7 @@ public interface PaymentService {
 
     double calculateTotal(OrderDto order);
 
-    void refund(UUID paymentId);
+    void successPayment(UUID paymentId);
 
     double calculateProductCost(OrderDto order);
 

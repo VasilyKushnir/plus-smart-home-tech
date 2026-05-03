@@ -31,9 +31,9 @@ public class PaymentController {
         return paymentService.calculateTotal(order);
     }
 
-    @PostMapping("/refund")
-    public void refund(@RequestBody @NotBlank UUID paymentId) {
-        paymentService.refund(paymentId);
+    @PostMapping("/success")
+    public void successPayment(@RequestBody @NotBlank UUID paymentId) {
+        paymentService.successPayment(paymentId);
     }
 
     @PostMapping("/productCost")

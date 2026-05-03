@@ -1,10 +1,8 @@
 package ru.yandex.practicum.commerce.payment.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+import ru.yandex.practicum.commerce.interactionapi.dto.PaymentStatus;
 
 import java.util.UUID;
 
@@ -19,6 +17,11 @@ public class Payment {
     @Id
     @GeneratedValue
     private UUID paymentId;
+
+    private UUID orderId;
+
+    @Enumerated(EnumType.STRING)
+    PaymentStatus paymentStatus;
 
     private double totalPayment;
 

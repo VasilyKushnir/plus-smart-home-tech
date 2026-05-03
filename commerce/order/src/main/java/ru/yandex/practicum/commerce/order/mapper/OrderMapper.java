@@ -17,7 +17,7 @@ public class OrderMapper {
                 .state(order.getState())
                 .deliveryWeight(order.getDeliveryWeight())
                 .deliveryVolume(order.getDeliveryVolume())
-                .fragile(order.isFragile())
+                .fragile(order.getFragile())
                 .totalPrice(order.getTotalPrice())
                 .deliveryPrice(order.getDeliveryPrice())
                 .productPrice(order.getProductPrice())

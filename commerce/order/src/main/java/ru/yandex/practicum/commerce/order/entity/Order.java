@@ -38,7 +38,7 @@ public class Order {
 
     private Double deliveryVolume;
 
-    private boolean fragile;
+    private Boolean fragile;
 
     private Double totalPrice;
 

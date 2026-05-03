@@ -52,7 +52,7 @@ public class ProductController {
     }
 
     @PostMapping("/quantityState")
-    public boolean updateQuantity(@Valid UpdateProductQuantityRequest request) {
+    public boolean updateQuantity(@Valid @RequestBody UpdateProductQuantityRequest request) {
         return productService.updateQuantity(request);
     }
 }
