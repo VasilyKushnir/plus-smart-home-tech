@@ -1,6 +1,7 @@
 package ru.yandex.practicum.commerce.delivery.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.commerce.delivery.entity.Address;
 import ru.yandex.practicum.commerce.delivery.entity.Delivery;
@@ -16,6 +17,7 @@ import ru.yandex.practicum.commerce.interactionapi.feign.WarehouseClient;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DeliveryServiceImpl implements DeliveryService {
@@ -36,6 +38,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         Delivery delivery = this.getDelivery(deliveryId);
         delivery.setDeliveryState(DeliveryState.DELIVERED);
         deliveryRepository.save(delivery);
+        log.info("Calling orderClient.deliverOrder for orderId: {}", delivery.getOrderId());
         orderClient.deliverOrder(delivery.getOrderId());
     }
 
@@ -43,11 +46,15 @@ public class DeliveryServiceImpl implements DeliveryService {
     public void returnPickedDelivery(UUID deliveryId) {
         Delivery delivery = this.getDelivery(deliveryId);
         delivery.setDeliveryState(DeliveryState.IN_PROGRESS);
+        log.info("Calling orderClient.assemblyOrder for orderId: {}", delivery.getOrderId());
         orderClient.assemblyOrder(delivery.getOrderId());
-        warehouseClient.shipToDelivery(ShippedToDeliveryRequest.builder()
+        log.info("Calling warehouseClient.shipToDelivery for orderId: {}", delivery.getOrderId());
+        ShippedToDeliveryRequest request = ShippedToDeliveryRequest.builder()
                 .orderId(delivery.getOrderId())
                 .deliveryId(deliveryId)
-                .build());
+                .build();
+        log.debug("Delivery request: {}", request);
+        warehouseClient.shipToDelivery(request);
     }
 
     @Override
@@ -55,6 +62,7 @@ public class DeliveryServiceImpl implements DeliveryService {
         Delivery delivery = this.getDelivery(deliveryId);
         delivery.setDeliveryState(DeliveryState.FAILED);
         deliveryRepository.save(delivery);
+        log.info("Calling orderClient.returnFailedDelivery for orderId: {}", delivery.getOrderId());
         orderClient.returnFailedDelivery(delivery.getOrderId());
     }
 

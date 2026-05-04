@@ -1,6 +1,7 @@
 package ru.yandex.practicum.commerce.payment.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.commerce.interactionapi.dto.OrderDto;
 import ru.yandex.practicum.commerce.interactionapi.dto.PaymentDto;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
@@ -54,6 +56,7 @@ public class PaymentServiceImpl implements PaymentService {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new NoPaymentFoundException("Payment with id: " + paymentId + " was not found"));
         payment.setPaymentStatus(PaymentStatus.SUCCESS);
+        log.info("Calling orderClient.payForOrder for OrderId: {}", payment.getOrderId());
         orderClient.payForOrder(payment.getOrderId());
     }
 
@@ -61,7 +64,10 @@ public class PaymentServiceImpl implements PaymentService {
     public double calculateProductCost(OrderDto order) {
         Map<UUID, Integer> products = order.getProducts();
         List<UUID> productIds = new ArrayList<>(products.keySet());
+        log.info("Calling shoppingStoreClient.getProductByIds for orderId: {}", order.getOrderId());
+        log.debug("Product Ids: {}", productIds);
         Map<UUID, ProductDto> productMap = shoppingStoreClient.getProductByIds(productIds);
+        log.debug("Product Map: {}", productMap);
 
         double totalProductCost = 0.0;
 
@@ -82,6 +88,7 @@ public class PaymentServiceImpl implements PaymentService {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new NoPaymentFoundException("Payment with id: " + paymentId + " was not found"));
         payment.setPaymentStatus(PaymentStatus.FAILED);
+        log.info("Calling orderClient.returnFailedPayment for OrderId: {}", payment.getOrderId());
         orderClient.returnFailedPayment(payment.getOrderId());
     }
 }

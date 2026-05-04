@@ -2,6 +2,7 @@ package ru.yandex.practicum.commerce.order.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import ru.yandex.practicum.commerce.order.repository.OrderRepository;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
@@ -42,15 +44,29 @@ public class OrderServiceImpl implements OrderService {
                 .orderId(order.getOrderId())
                 .build();
 
+        log.info("Calling warehouseClient.assembly for orderId: {}", order.getOrderId());
+        log.debug("Assembly request: {}", assemblyRequest);
         BookedProductsDto bookedProductsDto = warehouseClient.assembly(assemblyRequest);
+        log.debug("Assembly response: {}", bookedProductsDto);
+
+        order.setDeliveryWeight(bookedProductsDto.getDeliveryWeight());
+        order.setDeliveryVolume(bookedProductsDto.getDeliveryVolume());
+        order.setFragile(bookedProductsDto.isFragile());
+
+        log.info("Calling warehouseClient.getWarehouseAddress for orderId: {}", order.getOrderId());
+        AddressDto fromAddress = warehouseClient.getWarehouseAddress();
+        log.debug("Warehouse address response: {}", fromAddress);
 
         DeliveryDto deliveryDto = DeliveryDto.builder()
-                .fromAddress(warehouseClient.getWarehouseAddress())
+                .fromAddress(fromAddress)
                 .toAddress(request.getDeliveryAddress())
                 .orderId(order.getOrderId())
                 .build();
 
+        log.info("Calling deliveryClient.addDelivery for orderId: {}", order.getOrderId());
+        log.debug("Add delivery request: {}", deliveryDto);
         deliveryDto = deliveryClient.addDelivery(deliveryDto);
+        log.debug("Add delivery response: {}", deliveryDto);
         order.setDeliveryId(deliveryDto.getDeliveryId());
 
         order = orderRepository.save(order);
@@ -60,6 +76,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Page<OrderDto> getOrders(String username, Pageable pageable) {
+        log.info("Calling shoppingCartClient.getShoppingCart with username {}", username);
         UUID cartId = shoppingCartClient.getShoppingCart(username).getShoppingCartId();
         return orderRepository
                 .findAllByShoppingCartId(cartId, pageable)
@@ -69,6 +86,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDto returnOrder(ProductReturnRequest request) {
         Order order = this.updateOrderState(request.getOrderId(), OrderState.PRODUCT_RETURNED);
+        log.info("Calling warehouseClient.returnProductsToWarehouse for orderId: {}", order.getOrderId());
+        log.debug("Returning products: {}", request.getProducts());
         warehouseClient.returnProductsToWarehouse(request.getProducts());
         return OrderMapper.toDto(order);
     }
@@ -106,7 +125,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDto calculateTotal(UUID orderId) {
         Order order = this.getOrder(orderId);
+        log.info("Calling paymentClient.calculateProductCost for orderId: {}", order.getOrderId());
         order.setProductPrice(paymentClient.calculateProductCost(OrderMapper.toDto(order)));
+        log.info("Calling paymentClient.calculateTotal for orderId: {}", order.getOrderId());
         order.setTotalPrice(paymentClient.calculateTotal(OrderMapper.toDto(order)));
 
         PaymentDto paymentDto = paymentClient.processPayment(OrderMapper.toDto(order));
@@ -120,6 +141,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDto calculateDelivery(UUID orderId) {
         Order order = this.getOrder(orderId);
+        log.info("Calling deliveryClient.returnDeliveryCost  for orderId: {}", order.getOrderId());
         order.setDeliveryPrice(deliveryClient.returnDeliveryCost(OrderMapper.toDto(order)));
         order = orderRepository.save(order);
         return OrderMapper.toDto(order);
