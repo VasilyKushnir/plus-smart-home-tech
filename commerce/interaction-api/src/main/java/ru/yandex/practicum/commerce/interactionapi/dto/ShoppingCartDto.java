@@ -10,7 +10,7 @@ import java.util.UUID;
 @Builder(toBuilder = true)
 public class ShoppingCartDto {
     @NotNull
-    UUID shoppingCardId;
+    UUID shoppingCartId;
 
     Map<UUID, Integer> products;
 }

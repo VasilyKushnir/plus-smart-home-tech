@@ -6,10 +6,14 @@ import ru.yandex.practicum.commerce.interactionapi.dto.ProductCategory;
 import ru.yandex.practicum.commerce.interactionapi.dto.ProductDto;
 import ru.yandex.practicum.commerce.interactionapi.dto.UpdateProductQuantityRequest;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public interface ProductService {
     ProductDto getProductById(UUID id);
+
+    Map<UUID, ProductDto> getProductByIds(List<UUID> productIds);
 
     Page<ProductDto> getProductsByCategory(ProductCategory category, Pageable pageable);
 

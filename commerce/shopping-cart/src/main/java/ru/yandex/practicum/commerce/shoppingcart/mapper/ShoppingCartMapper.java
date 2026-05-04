@@ -11,7 +11,7 @@ public class ShoppingCartMapper {
 
     public ShoppingCartDto toDto(ShoppingCart shoppingCart) {
         return ShoppingCartDto.builder()
-                .shoppingCardId(shoppingCart.getShoppingCartId())
+                .shoppingCartId(shoppingCart.getShoppingCartId())
                 .products(new HashMap<>(shoppingCart.getProducts()))
                 .build();
     }
