@@ -9,6 +9,8 @@ import ru.yandex.practicum.commerce.interactionapi.dto.ProductCategory;
 import ru.yandex.practicum.commerce.interactionapi.dto.ProductDto;
 import ru.yandex.practicum.commerce.interactionapi.dto.UpdateProductQuantityRequest;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @FeignClient(name = "shopping-store", path = "/api/v1/shopping-store")
@@ -16,6 +18,9 @@ public interface ShoppingStoreClient {
 
     @GetMapping("/{productId}")
     ProductDto getProductById(@PathVariable UUID productId);
+
+    @PostMapping("/batch")
+    Map<UUID, ProductDto> getProductByIds(List<UUID> productIds);
 
     @GetMapping
     Page<ProductDto> getProductsByCategory(

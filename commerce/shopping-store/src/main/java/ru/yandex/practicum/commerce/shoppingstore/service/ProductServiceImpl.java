@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.commerce.interactionapi.dto.ProductDto;
 import ru.yandex.practicum.commerce.interactionapi.dto.ProductCategory;
+import ru.yandex.practicum.commerce.interactionapi.dto.ProductDto;
 import ru.yandex.practicum.commerce.interactionapi.dto.ProductState;
 import ru.yandex.practicum.commerce.interactionapi.dto.UpdateProductQuantityRequest;
 import ru.yandex.practicum.commerce.shoppingstore.entity.Product;
@@ -14,6 +14,9 @@ import ru.yandex.practicum.commerce.shoppingstore.exception.NotFoundException;
 import ru.yandex.practicum.commerce.shoppingstore.mapper.ProductMapper;
 import ru.yandex.practicum.commerce.shoppingstore.repository.ProductRepository;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -26,6 +29,24 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Product with id " + id + " was not found"));
         return ProductMapper.toDto(product);
+    }
+
+    @Override
+    public Map<UUID, ProductDto> getProductByIds(List<UUID> productIds) {
+        List<Product> products = productRepository.findAllById(productIds);
+
+        if (products.size() != productIds.size()) {
+            throw new NotFoundException("Some products were not found");
+        }
+
+        Map<UUID, ProductDto> map = new HashMap<>();
+
+        for (Product product : products) {
+            ProductDto productDto = ProductMapper.toDto(product);
+            map.put(productDto.getProductId(), productDto);
+        }
+
+        return map;
     }
 
     @Override
