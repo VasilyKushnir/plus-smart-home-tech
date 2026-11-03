@@ -1,6 +1,7 @@
 package ru.yandex.practicum.commerce.shoppingstore.contoller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,8 @@ import ru.yandex.practicum.commerce.interactionapi.dto.ProductDto;
 import ru.yandex.practicum.commerce.interactionapi.dto.UpdateProductQuantityRequest;
 import ru.yandex.practicum.commerce.shoppingstore.service.ProductService;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Validated
@@ -26,6 +29,11 @@ public class ProductController {
     @GetMapping("/{productId}")
     public ProductDto getProductById(@PathVariable UUID productId) {
         return productService.getProductById(productId);
+    }
+
+    @PostMapping("/batch")
+    public Map<UUID, ProductDto> getProductByIds(@RequestBody @NotEmpty List<UUID> productIds) {
+        return productService.getProductByIds(productIds);
     }
 
     @GetMapping
@@ -52,7 +60,7 @@ public class ProductController {
     }
 
     @PostMapping("/quantityState")
-    public boolean updateQuantity(@Valid UpdateProductQuantityRequest request) {
+    public boolean updateQuantity(UpdateProductQuantityRequest request) {
         return productService.updateQuantity(request);
     }
 }

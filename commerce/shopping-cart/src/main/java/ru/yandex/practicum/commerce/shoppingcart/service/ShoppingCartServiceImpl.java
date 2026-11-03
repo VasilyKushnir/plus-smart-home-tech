@@ -2,7 +2,9 @@ package ru.yandex.practicum.commerce.shoppingcart.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.commerce.interactionapi.dto.BookedProductsDto;
 import ru.yandex.practicum.commerce.interactionapi.dto.ChangeProductQuantityRequest;
 import ru.yandex.practicum.commerce.interactionapi.dto.ShoppingCartDto;
 import ru.yandex.practicum.commerce.interactionapi.dto.ShoppingCartState;
@@ -18,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ShoppingCartServiceImpl implements ShoppingCartService {
@@ -35,7 +38,11 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     public ShoppingCartDto addToShoppingCart(String username, Map<UUID, Integer> products) {
         ShoppingCart currentShoppingCart = this.returnShoppingCart(username);
         currentShoppingCart.getProducts().putAll(products);
-        warehouseClient.checkProductsInWarehouse(ShoppingCartMapper.toDto(currentShoppingCart));
+        log.info("Calling warehouseClient.checkProductsInWarehouse for user: {}", currentShoppingCart.getUsername());
+        log.debug("Request as shoppingCart is {}", currentShoppingCart);
+        BookedProductsDto bookedProductsDto = warehouseClient
+                .checkProductsInWarehouse(ShoppingCartMapper.toDto(currentShoppingCart));
+        log.debug("Response as bookedProductsDto is {}", bookedProductsDto);
         ShoppingCart updatedShoppingCart = shoppingCartRepository.save(currentShoppingCart);
         return ShoppingCartMapper.toDto(updatedShoppingCart);
     }
